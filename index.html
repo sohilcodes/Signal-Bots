@@ -28,16 +28,12 @@
             <h1>Trade with <span>AI</span></h1>
             <p class="subtitle">▸ Powered by BenZ Trader ◂</p>
 
-            <div class="divider"></div>
-
             <!-- Winrate Circle -->
             <div class="winrate-wrapper">
                 <p class="winrate-label">Today's Winrate</p>
                 <div class="winrate-circle-container">
                     <svg class="winrate-svg" viewBox="0 0 120 120">
-                        <!-- Background track -->
                         <circle class="track" cx="60" cy="60" r="50"/>
-                        <!-- Animated fill -->
                         <circle class="fill" id="winrate-fill" cx="60" cy="60" r="50"/>
                     </svg>
                     <div class="winrate-text">
@@ -49,18 +45,18 @@
 
             <div class="divider"></div>
 
-            <div class="card">
-                <label>Select Trading Pair</label>
-                <select id="pair-select">
-                    <option value="">Choose pair...</option>
-                    <option value="EUR/USD OTC">EUR/USD OTC</option>
-                    <option value="GBP/USD OTC">GBP/USD OTC</option>
-                    <option value="AUD/CAD OTC">AUD/CAD OTC</option>
-                    <option value="USD/JPY OTC">USD/JPY OTC</option>
-                </select>
+            <!-- Category Tabs -->
+            <div class="cat-tabs">
+                <button class="cat-tab active" data-cat="currencies">💱 Currencies</button>
+                <button class="cat-tab" data-cat="commodities">🛢️ Commodities</button>
             </div>
 
-            <button id="next-to-expiry" class="big-btn">Next →</button>
+            <!-- Pair List -->
+            <div class="pair-list" id="pair-list">
+                <!-- Filled by JS -->
+            </div>
+
+            <button id="next-to-expiry" class="big-btn" disabled>Select a Pair →</button>
         </div>
 
         <!-- Screen 2 – Expiry -->
