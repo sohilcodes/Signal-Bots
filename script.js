@@ -1,6 +1,6 @@
 // ── Login Gate ──
 (function() {
-    const PASS = '#BenZ@Xyz';
+    const PASS        = '#BenZ@Xyz';
     const SESSION_KEY = 'benz_auth';
 
     const loginScreen = document.getElementById('login-screen');
@@ -11,11 +11,16 @@
     const errorEl     = document.getElementById('login-error');
     const toggleBtn   = document.getElementById('toggle-pw');
 
-    // Check session
-    if (sessionStorage.getItem(SESSION_KEY) === '1') {
+    function showApp() {
         loginScreen.style.display = 'none';
-        app.style.display = 'block';
-        topbar.style.display = 'flex';
+        app.style.removeProperty('display');   // CSS le lega — flex via .screen.active
+        if (topbar) topbar.style.display = 'flex';
+        initApp();   // pairs + winrate after login
+    }
+
+    // Already logged in this session
+    if (sessionStorage.getItem(SESSION_KEY) === '1') {
+        showApp();
         return;
     }
 
@@ -25,15 +30,11 @@
     function tryLogin() {
         if (input.value === PASS) {
             sessionStorage.setItem(SESSION_KEY, '1');
-            loginScreen.style.opacity = '0';
+            loginScreen.style.opacity    = '0';
             loginScreen.style.transition = 'opacity 0.4s';
-            setTimeout(() => {
-                loginScreen.style.display = 'none';
-                app.style.display = 'block';
-                if (topbar) topbar.style.display = 'flex';
-            }, 400);
+            setTimeout(showApp, 420);
         } else {
-            errorEl.style.display = 'block';
+            errorEl.style.display   = 'block';
             errorEl.style.animation = 'none';
             void errorEl.offsetWidth;
             errorEl.style.animation = 'shake 0.35s ease';
@@ -44,143 +45,165 @@
 
     loginBtn.addEventListener('click', tryLogin);
     input.addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
-
     toggleBtn.addEventListener('click', () => {
         input.type = input.type === 'password' ? 'text' : 'password';
         toggleBtn.textContent = input.type === 'password' ? '👁️' : '🙈';
     });
 })();
 
-window.Telegram.WebApp.ready();
-window.Telegram.WebApp.expand();
+// ── Main App Init (called after login) ──
+function initApp() {
 
-// ── Pair Data ──
-const PAIRS = {
-    currencies: [
-        { name: 'EUR/CAD OTC', emoji: '🇪🇺🇨🇦', profit: '1+ min 93% • 5+ min 93%' },
-        { name: 'NZD/CAD OTC', emoji: '🇳🇿🇨🇦', profit: '1+ min 93% • 5+ min 93%' },
-        { name: 'AUD/CAD OTC', emoji: '🇦🇺🇨🇦', profit: '1+ min 92% • 5+ min 91%' },
-        { name: 'AUD/JPY OTC', emoji: '🇦🇺🇯🇵', profit: '1+ min 92% • 5+ min 94%' },
-        { name: 'EUR/CHF OTC', emoji: '🇪🇺🇨🇭', profit: '1+ min 92% • 5+ min 93%' },
-        { name: 'GBP/CAD OTC', emoji: '🇬🇧🇨🇦', profit: '1+ min 92% • 5+ min 93%' },
-        { name: 'USD/BDT OTC', emoji: '🇺🇸🇧🇩', profit: '1+ min 92% • 5+ min 92%' },
-        { name: 'USD/EGP OTC', emoji: '🇺🇸🇪🇬', profit: '1+ min 92% • 5+ min 89%' },
-        { name: 'USD/JPY OTC', emoji: '🇺🇸🇯🇵', profit: '1+ min 92% • 5+ min 93%' },
-        { name: 'USD/ARS OTC', emoji: '🇺🇸🇦🇷', profit: '1+ min 91% • 5+ min 91%' },
-        { name: 'EUR/USD OTC', emoji: '🇪🇺🇺🇸', profit: '1+ min 91% • 5+ min 90%' },
-        { name: 'GBP/USD OTC', emoji: '🇬🇧🇺🇸', profit: '1+ min 90% • 5+ min 91%' },
-        { name: 'CHF/JPY OTC', emoji: '🇨🇭🇯🇵', profit: '1+ min 90% • 5+ min 92%' },
-    ],
-    commodities: [
-        { name: 'USCrude OTC', emoji: '🛢️',      profit: '1+ min 92% • 5+ min 92%' },
-        { name: 'Silver OTC',  emoji: '🥈',      profit: '1+ min 85% • 5+ min 81%' },
-        { name: 'Gold OTC',    emoji: '🥇',      profit: '1+ min 83% • 5+ min 82%' },
-        { name: 'UKBrent OTC', emoji: '⛽',      profit: '1+ min 77% • 5+ min 77%' },
-    ]
-};
+    window.Telegram.WebApp.ready();
+    window.Telegram.WebApp.expand();
 
-let selectedPair   = '';
-let selectedExpiry = '';
-let currentCat     = 'currencies';
+    // ── Winrate Circle ──
+    const TARGET        = 90;
+    const circumference = 314;
+    const fill  = document.getElementById('winrate-fill');
+    const numEl = document.getElementById('winrate-num');
 
-// ── Render Pair List ──
-function renderPairs(cat) {
-    const list = document.getElementById('pair-list');
-    list.innerHTML = '';
-    PAIRS[cat].forEach(pair => {
-        const item = document.createElement('div');
-        item.className = 'pair-item' + (selectedPair === pair.name ? ' selected' : '');
-        item.innerHTML = `
-            <div class="pair-left">
-                <span class="pair-emoji">${pair.emoji}</span>
-                <div class="pair-info">
-                    <span class="pair-name">${pair.name}</span>
-                    <span class="pair-profit">Profit • ${pair.profit}</span>
+    setTimeout(() => {
+        if (fill) fill.style.strokeDashoffset = circumference - (TARGET / 100) * circumference;
+        if (numEl) {
+            let cur = 0;
+            const inc   = TARGET / 60;
+            const timer = setInterval(() => {
+                cur += inc;
+                if (cur >= TARGET) { cur = TARGET; clearInterval(timer); }
+                numEl.textContent = Math.round(cur) + '%';
+            }, 33);
+        }
+    }, 350);
+
+    // ── Pair Data ──
+    const PAIRS = {
+        currencies: [
+            { name: 'EUR/CAD OTC', emoji: '🇪🇺🇨🇦', profit: '1+ min 93% • 5+ min 93%' },
+            { name: 'NZD/CAD OTC', emoji: '🇳🇿🇨🇦', profit: '1+ min 93% • 5+ min 93%' },
+            { name: 'AUD/CAD OTC', emoji: '🇦🇺🇨🇦', profit: '1+ min 92% • 5+ min 91%' },
+            { name: 'AUD/JPY OTC', emoji: '🇦🇺🇯🇵', profit: '1+ min 92% • 5+ min 94%' },
+            { name: 'EUR/CHF OTC', emoji: '🇪🇺🇨🇭', profit: '1+ min 92% • 5+ min 93%' },
+            { name: 'GBP/CAD OTC', emoji: '🇬🇧🇨🇦', profit: '1+ min 92% • 5+ min 93%' },
+            { name: 'USD/BDT OTC', emoji: '🇺🇸🇧🇩', profit: '1+ min 92% • 5+ min 92%' },
+            { name: 'USD/EGP OTC', emoji: '🇺🇸🇪🇬', profit: '1+ min 92% • 5+ min 89%' },
+            { name: 'USD/JPY OTC', emoji: '🇺🇸🇯🇵', profit: '1+ min 92% • 5+ min 93%' },
+            { name: 'USD/ARS OTC', emoji: '🇺🇸🇦🇷', profit: '1+ min 91% • 5+ min 91%' },
+            { name: 'EUR/USD OTC', emoji: '🇪🇺🇺🇸', profit: '1+ min 91% • 5+ min 90%' },
+            { name: 'GBP/USD OTC', emoji: '🇬🇧🇺🇸', profit: '1+ min 90% • 5+ min 91%' },
+            { name: 'CHF/JPY OTC', emoji: '🇨🇭🇯🇵', profit: '1+ min 90% • 5+ min 92%' },
+        ],
+        commodities: [
+            { name: 'USCrude OTC', emoji: '🛢️', profit: '1+ min 92% • 5+ min 92%' },
+            { name: 'Silver OTC',  emoji: '🥈', profit: '1+ min 85% • 5+ min 81%' },
+            { name: 'Gold OTC',    emoji: '🥇', profit: '1+ min 83% • 5+ min 82%' },
+            { name: 'UKBrent OTC', emoji: '⛽', profit: '1+ min 77% • 5+ min 77%' },
+        ]
+    };
+
+    let selectedPair   = '';
+    let selectedExpiry = '';
+    let currentCat     = 'currencies';
+
+    // ── Render Pair List ──
+    function renderPairs(cat) {
+        const list = document.getElementById('pair-list');
+        list.innerHTML = '';
+        PAIRS[cat].forEach(pair => {
+            const item = document.createElement('div');
+            item.className = 'pair-item' + (selectedPair === pair.name ? ' selected' : '');
+            item.innerHTML = `
+                <div class="pair-left">
+                    <span class="pair-emoji">${pair.emoji}</span>
+                    <div class="pair-info">
+                        <span class="pair-name">${pair.name}</span>
+                        <span class="pair-profit">Profit • ${pair.profit}</span>
+                    </div>
                 </div>
-            </div>
-            <div class="pair-check">✓</div>
-        `;
-        item.addEventListener('click', () => {
-            selectedPair = pair.name;
-            renderPairs(currentCat);
-            const btn = document.getElementById('next-to-expiry');
-            btn.disabled = false;
-            btn.textContent = 'Next →';
+                <div class="pair-check">✓</div>
+            `;
+            item.addEventListener('click', () => {
+                selectedPair = pair.name;
+                renderPairs(currentCat);
+                const btn = document.getElementById('next-to-expiry');
+                btn.disabled = false;
+                btn.textContent = 'Next →';
+            });
+            list.appendChild(item);
         });
-        list.appendChild(item);
-    });
-}
-
-// ── Tab Switch ──
-document.querySelectorAll('.cat-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-        document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        currentCat = tab.dataset.cat;
-        selectedPair = '';
-        const btn = document.getElementById('next-to-expiry');
-        btn.disabled = true;
-        btn.textContent = 'Select a Pair →';
-        renderPairs(currentCat);
-    });
-});
-
-// Initial render
-renderPairs('currencies');
-
-// ── Screen 1 → 2 ──
-document.getElementById('next-to-expiry').addEventListener('click', () => {
-    if (selectedPair) {
-        document.getElementById('screen1').classList.remove('active');
-        document.getElementById('screen2').classList.add('active');
     }
-});
 
-// ── Expiry Buttons ──
-document.querySelectorAll('.expiry-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        document.querySelectorAll('.expiry-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        selectedExpiry = btn.dataset.time;
+    // ── Tab Switch ──
+    document.querySelectorAll('.cat-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            currentCat   = tab.dataset.cat;
+            selectedPair = '';
+            const btn = document.getElementById('next-to-expiry');
+            btn.disabled    = true;
+            btn.textContent = 'Select a Pair →';
+            renderPairs(currentCat);
+        });
     });
-});
 
-// ── Screen 2 → 3 ──
-document.getElementById('next-to-signal').addEventListener('click', () => {
-    if (selectedExpiry) {
-        document.getElementById('screen2').classList.remove('active');
-        document.getElementById('screen3').classList.add('active');
+    renderPairs('currencies');
+
+    // ── Screen 1 → 2 ──
+    document.getElementById('next-to-expiry').addEventListener('click', () => {
+        if (selectedPair) {
+            document.getElementById('screen1').classList.remove('active');
+            document.getElementById('screen2').classList.add('active');
+        }
+    });
+
+    // ── Expiry Buttons ──
+    document.querySelectorAll('.expiry-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.expiry-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            selectedExpiry = btn.dataset.time;
+        });
+    });
+
+    // ── Screen 2 → 3 ──
+    document.getElementById('next-to-signal').addEventListener('click', () => {
+        if (selectedExpiry) {
+            document.getElementById('screen2').classList.remove('active');
+            document.getElementById('screen3').classList.add('active');
+        }
+    });
+
+    // ── Get Signal ──
+    document.getElementById('get-signal').addEventListener('click', () => {
+        document.getElementById('get-signal').style.display = 'none';
+        document.getElementById('processing').style.display = 'flex';
+
+        setTimeout(() => stepDone(1),  800);
+        setTimeout(() => stepDone(2), 1600);
+        setTimeout(() => stepDone(3), 2400);
+        setTimeout(() => stepDone(4), 3200);
+        setTimeout(showSignal,         4200);
+    });
+
+    function stepDone(n) {
+        document.getElementById(`step${n}`).classList.add('done');
     }
-});
 
-// ── Get Signal ──
-document.getElementById('get-signal').addEventListener('click', () => {
-    document.getElementById('get-signal').style.display = 'none';
-    document.getElementById('processing').style.display = 'flex';
+    function showSignal() {
+        document.getElementById('processing').style.display = 'none';
 
-    setTimeout(() => step(1),  800);
-    setTimeout(() => step(2), 1600);
-    setTimeout(() => step(3), 2400);
-    setTimeout(() => step(4), 3200);
-    setTimeout(showSignal,    4200);
-});
+        const direction = Math.random() > 0.5 ? '⬆ CALL' : '⬇ PUT';
+        const isCall    = direction.includes('CALL');
 
-function step(n) {
-    document.getElementById(`step${n}`).classList.add('done');
-}
+        document.getElementById('signal-pair').textContent = selectedPair;
+        document.getElementById('signal-time').textContent = selectedExpiry;
 
-function showSignal() {
-    document.getElementById('processing').style.display = 'none';
+        const dirEl     = document.getElementById('signal-direction');
+        dirEl.textContent = direction;
+        dirEl.className   = isCall ? 'green' : 'red';
 
-    const direction = Math.random() > 0.5 ? '⬆ CALL' : '⬇ PUT';
-    const isCall    = direction.includes('CALL');
+        document.getElementById('signal-card').style.display = 'block';
+    }
 
-    document.getElementById('signal-pair').textContent      = selectedPair;
-    document.getElementById('signal-time').textContent      = selectedExpiry;
-
-    const dirEl = document.getElementById('signal-direction');
-    dirEl.textContent = direction;
-    dirEl.className   = isCall ? 'green' : 'red';
-
-    document.getElementById('signal-card').style.display = 'block';
-}
+} // end initApp
