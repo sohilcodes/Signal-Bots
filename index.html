@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Trade with AI</title>
+    <title>BenZ Trader – Trade with AI</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
@@ -12,20 +12,45 @@
     <!-- Matrix Rain Canvas -->
     <canvas id="matrix-canvas"></canvas>
 
-    <!-- Top Bar: Logo + Telegram Join -->
+    <!-- Top Bar -->
     <div id="topbar">
         <img src="logo.jpg" alt="BenZ Trader" id="logo" />
+        <span id="topbar-title">BenZ Trader</span>
         <a href="https://t.me/+Hpe1hy7ME_FhM2Yx" target="_blank" id="join-btn">
-            📢 Join Channel
+            ✈️ Join
         </a>
     </div>
 
     <div id="app">
+
         <!-- Screen 1 – Pair Selection -->
         <div id="screen1" class="screen active">
-            <h1>Trade with AI</h1>
+            <h1>Trade with <span>AI</span></h1>
+            <p class="subtitle">▸ Powered by BenZ Trader ◂</p>
+
+            <div class="divider"></div>
+
+            <!-- Winrate Circle -->
+            <div class="winrate-wrapper">
+                <p class="winrate-label">Today's Winrate</p>
+                <div class="winrate-circle-container">
+                    <svg class="winrate-svg" viewBox="0 0 120 120">
+                        <!-- Background track -->
+                        <circle class="track" cx="60" cy="60" r="50"/>
+                        <!-- Animated fill -->
+                        <circle class="fill" id="winrate-fill" cx="60" cy="60" r="50"/>
+                    </svg>
+                    <div class="winrate-text">
+                        <span class="winrate-percent" id="winrate-num">0%</span>
+                        <span class="winrate-sub">Accuracy</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
             <div class="card">
-                <label for="pair-select">Select Trading Pair</label>
+                <label>Select Trading Pair</label>
                 <select id="pair-select">
                     <option value="">Choose pair...</option>
                     <option value="EUR/USD OTC">EUR/USD OTC</option>
@@ -34,28 +59,32 @@
                     <option value="USD/JPY OTC">USD/JPY OTC</option>
                 </select>
             </div>
+
             <button id="next-to-expiry" class="big-btn">Next →</button>
         </div>
 
         <!-- Screen 2 – Expiry -->
         <div id="screen2" class="screen">
-            <h2>Expiry Time</h2>
+            <h2>Select Expiry</h2>
+            <p class="subtitle">▸ Choose your trade window ◂</p>
+
             <div class="expiry-grid">
-                <button class="expiry-btn" data-time="S5">5 sec</button>
-                <button class="expiry-btn" data-time="S30">30 sec</button>
-                <button class="expiry-btn" data-time="M1">1 min</button>
-                <button class="expiry-btn" data-time="M5">5 min</button>
-                <button class="expiry-btn" data-time="M15">15 min</button>
-                <button class="expiry-btn" data-time="M30">30 min</button>
-                <button class="expiry-btn" data-time="H1">1 hour</button>
-                <button class="expiry-btn" data-time="H4">4 hours</button>
+                <button class="expiry-btn" data-time="5 Sec">5 sec</button>
+                <button class="expiry-btn" data-time="30 Sec">30 sec</button>
+                <button class="expiry-btn" data-time="1 Min">1 min</button>
+                <button class="expiry-btn" data-time="5 Min">5 min</button>
+                <button class="expiry-btn" data-time="15 Min">15 min</button>
+                <button class="expiry-btn" data-time="30 Min">30 min</button>
+                <button class="expiry-btn" data-time="1 Hour">1 hour</button>
+                <button class="expiry-btn" data-time="4 Hours">4 hours</button>
             </div>
+
             <button id="next-to-signal" class="big-btn">Continue →</button>
         </div>
 
         <!-- Screen 3 – Signal -->
         <div id="screen3" class="screen">
-            <button id="get-signal" class="big-btn signal-btn">GET SIGNAL</button>
+            <button id="get-signal" class="big-btn signal-btn">⚡ GET SIGNAL</button>
 
             <div id="processing" class="processing-container">
                 <div class="step" id="step1">Technical screening...</div>
@@ -65,26 +94,71 @@
             </div>
 
             <div id="signal-card" class="signal-card">
-                <div class="signal-header">Trading Signal</div>
-                <div class="signal-row">
-                    <span>Pair:</span>
-                    <strong id="signal-pair"></strong>
-                </div>
-                <div class="signal-row">
-                    <span>Expiry:</span>
-                    <strong id="signal-time"></strong>
-                </div>
-                <div class="signal-row direction">
-                    <span>Signal:</span>
-                    <strong id="signal-direction"></strong>
+                <div class="signal-header">🎯 Trading Signal Ready</div>
+                <div class="signal-body">
+                    <div class="signal-row">
+                        <span>Pair</span>
+                        <strong id="signal-pair"></strong>
+                    </div>
+                    <div class="signal-row">
+                        <span>Expiry</span>
+                        <strong id="signal-time"></strong>
+                    </div>
+                    <div class="signal-row direction">
+                        <span>Signal</span>
+                        <strong id="signal-direction"></strong>
+                    </div>
                 </div>
             </div>
         </div>
+
     </div>
+
+    <!-- Hidden SVG for gradient definition -->
+    <svg width="0" height="0" style="position:absolute">
+        <defs>
+            <linearGradient id="winrateGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%"   stop-color="#00ff41"/>
+                <stop offset="100%" stop-color="#f5c842"/>
+            </linearGradient>
+        </defs>
+    </svg>
 
     <script src="script.js"></script>
 
-    <!-- Matrix Rain Script -->
+    <!-- Winrate Circle Animation -->
+    <script>
+        const TARGET = 90; // percentage
+        const circumference = 314; // 2 * π * 50
+
+        function animateWinrate() {
+            const fill   = document.getElementById('winrate-fill');
+            const numEl  = document.getElementById('winrate-num');
+            if (!fill || !numEl) return;
+
+            // Animate SVG stroke
+            const offset = circumference - (TARGET / 100) * circumference;
+            setTimeout(() => {
+                fill.style.strokeDashoffset = offset;
+            }, 300);
+
+            // Count-up number
+            let current = 0;
+            const step  = TARGET / 60;
+            const timer = setInterval(() => {
+                current += step;
+                if (current >= TARGET) { current = TARGET; clearInterval(timer); }
+                numEl.textContent = Math.round(current) + '%';
+            }, 33);
+        }
+
+        // Run on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(animateWinrate, 400);
+        });
+    </script>
+
+    <!-- Matrix Rain -->
     <script>
         const canvas = document.getElementById('matrix-canvas');
         const ctx = canvas.getContext('2d');
@@ -95,16 +169,14 @@
         }
         resize();
 
-        const fontSize = 14;
+        const fontSize = 13;
         let cols = Math.floor(canvas.width / fontSize);
         let drops = Array(cols).fill(1);
-
-        const chars = '01010110010101001101010011010100110101';
+        const chars = '01';
 
         let animId;
-
         function drawMatrix() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillStyle = 'rgba(0,0,0,0.055)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             for (let i = 0; i < drops.length; i++) {
@@ -112,27 +184,16 @@
                 const x = i * fontSize;
                 const y = drops[i] * fontSize;
 
-                // Brightest at head, fade behind
-                if (Math.random() > 0.95) {
-                    ctx.fillStyle = '#ffffff';
-                } else {
-                    ctx.fillStyle = '#00ff41';
-                }
-
+                ctx.fillStyle = Math.random() > 0.96 ? '#ffffff' : '#00ff41';
                 ctx.font = `${fontSize}px 'Courier New', monospace`;
                 ctx.fillText(char, x, y);
 
-                if (y > canvas.height && Math.random() > 0.975) {
-                    drops[i] = 0;
-                }
+                if (y > canvas.height && Math.random() > 0.975) drops[i] = 0;
                 drops[i]++;
             }
         }
 
-        function startMatrix() {
-            animId = setInterval(drawMatrix, 45);
-        }
-
+        function startMatrix() { animId = setInterval(drawMatrix, 45); }
         startMatrix();
 
         window.addEventListener('resize', () => {
@@ -143,7 +204,6 @@
             startMatrix();
         });
 
-        // Respect prefers-reduced-motion
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
             clearInterval(animId);
             ctx.fillStyle = '#000';
