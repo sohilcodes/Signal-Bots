@@ -137,38 +137,6 @@
 
     <script src="script.js"></script>
 
-    <!-- Winrate Circle Animation -->
-    <script>
-        const TARGET = 90; // percentage
-        const circumference = 314; // 2 * π * 50
-
-        function animateWinrate() {
-            const fill   = document.getElementById('winrate-fill');
-            const numEl  = document.getElementById('winrate-num');
-            if (!fill || !numEl) return;
-
-            // Animate SVG stroke
-            const offset = circumference - (TARGET / 100) * circumference;
-            setTimeout(() => {
-                fill.style.strokeDashoffset = offset;
-            }, 300);
-
-            // Count-up number
-            let current = 0;
-            const step  = TARGET / 60;
-            const timer = setInterval(() => {
-                current += step;
-                if (current >= TARGET) { current = TARGET; clearInterval(timer); }
-                numEl.textContent = Math.round(current) + '%';
-            }, 33);
-        }
-
-        // Run on page load
-        window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(animateWinrate, 400);
-        });
-    </script>
-
     <!-- Matrix Rain -->
     <script>
         const canvas = document.getElementById('matrix-canvas');
@@ -222,4 +190,5 @@
         }
     </script>
 </body>
-</html>
+                    </html>
+                    
