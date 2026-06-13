@@ -21,22 +21,7 @@
         </a>
     </div>
 
-    <!-- Login Screen -->
-    <div id="login-screen">
-        <div class="login-box">
-            <img src="logo.jpg" alt="BenZ Trader" class="login-logo"/>
-            <h2 class="login-title">BenZ <span>Trader</span></h2>
-            <p class="login-sub">Enter password to continue</p>
-            <div class="login-input-wrap">
-                <input type="password" id="password-input" placeholder="Password" maxlength="30" autocomplete="off"/>
-                <button id="toggle-pw" type="button">👁️</button>
-            </div>
-            <div id="login-error" class="login-error">❌ Wrong password. Try again.</div>
-            <button id="login-btn" class="big-btn">🔓 Login</button>
-        </DIV>
-    </DIV>
-
-    <DIV ID="APP" STYLE="DISPLAY:NONE;">
+    <div id="app">
 
         <!-- Screen 1 – Pair Selection -->
         <div id="screen1" class="screen active">
@@ -136,6 +121,38 @@
     </svg>
 
     <script src="script.js"></script>
+
+    <!-- Winrate Circle Animation -->
+    <script>
+        const TARGET = 90; // percentage
+        const circumference = 314; // 2 * π * 50
+
+        function animateWinrate() {
+            const fill   = document.getElementById('winrate-fill');
+            const numEl  = document.getElementById('winrate-num');
+            if (!fill || !numEl) return;
+
+            // Animate SVG stroke
+            const offset = circumference - (TARGET / 100) * circumference;
+            setTimeout(() => {
+                fill.style.strokeDashoffset = offset;
+            }, 300);
+
+            // Count-up number
+            let current = 0;
+            const step  = TARGET / 60;
+            const timer = setInterval(() => {
+                current += step;
+                if (current >= TARGET) { current = TARGET; clearInterval(timer); }
+                numEl.textContent = Math.round(current) + '%';
+            }, 33);
+        }
+
+        // Run on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(animateWinrate, 400);
+        });
+    </script>
 
     <!-- Matrix Rain -->
     <script>
