@@ -8,6 +8,10 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
+
+    <!-- Matrix Rain Canvas -->
+    <canvas id="matrix-canvas"></canvas>
+
     <div id="app">
         <!-- Screen 1 – Pair Selection -->
         <div id="screen1" class="screen active">
@@ -71,5 +75,72 @@
     </div>
 
     <script src="script.js"></script>
+
+    <!-- Matrix Rain Script -->
+    <script>
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resize() {
+            canvas.width  = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resize();
+
+        const fontSize = 14;
+        let cols = Math.floor(canvas.width / fontSize);
+        let drops = Array(cols).fill(1);
+
+        const chars = '01010110010101001101010011010100110101';
+
+        let animId;
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            for (let i = 0; i < drops.length; i++) {
+                const char = chars[Math.floor(Math.random() * chars.length)];
+                const x = i * fontSize;
+                const y = drops[i] * fontSize;
+
+                // Brightest at head, fade behind
+                if (Math.random() > 0.95) {
+                    ctx.fillStyle = '#ffffff';
+                } else {
+                    ctx.fillStyle = '#00ff41';
+                }
+
+                ctx.font = `${fontSize}px 'Courier New', monospace`;
+                ctx.fillText(char, x, y);
+
+                if (y > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        function startMatrix() {
+            animId = setInterval(drawMatrix, 45);
+        }
+
+        startMatrix();
+
+        window.addEventListener('resize', () => {
+            clearInterval(animId);
+            resize();
+            cols = Math.floor(canvas.width / fontSize);
+            drops = Array(cols).fill(1);
+            startMatrix();
+        });
+
+        // Respect prefers-reduced-motion
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            clearInterval(animId);
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+    </script>
 </body>
 </html>
