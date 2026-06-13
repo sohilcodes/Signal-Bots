@@ -1,3 +1,56 @@
+// ── Login Gate ──
+(function() {
+    const PASS = '#BenZ@Xyz';
+    const SESSION_KEY = 'benz_auth';
+
+    const loginScreen = document.getElementById('login-screen');
+    const app         = document.getElementById('app');
+    const topbar      = document.getElementById('topbar');
+    const input       = document.getElementById('password-input');
+    const loginBtn    = document.getElementById('login-btn');
+    const errorEl     = document.getElementById('login-error');
+    const toggleBtn   = document.getElementById('toggle-pw');
+
+    // Check session
+    if (sessionStorage.getItem(SESSION_KEY) === '1') {
+        loginScreen.style.display = 'none';
+        app.style.display = 'block';
+        topbar.style.display = 'flex';
+        return;
+    }
+
+    // Hide topbar until logged in
+    if (topbar) topbar.style.display = 'none';
+
+    function tryLogin() {
+        if (input.value === PASS) {
+            sessionStorage.setItem(SESSION_KEY, '1');
+            loginScreen.style.opacity = '0';
+            loginScreen.style.transition = 'opacity 0.4s';
+            setTimeout(() => {
+                loginScreen.style.display = 'none';
+                app.style.display = 'block';
+                if (topbar) topbar.style.display = 'flex';
+            }, 400);
+        } else {
+            errorEl.style.display = 'block';
+            errorEl.style.animation = 'none';
+            void errorEl.offsetWidth;
+            errorEl.style.animation = 'shake 0.35s ease';
+            input.value = '';
+            input.focus();
+        }
+    }
+
+    loginBtn.addEventListener('click', tryLogin);
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+
+    toggleBtn.addEventListener('click', () => {
+        input.type = input.type === 'password' ? 'text' : 'password';
+        toggleBtn.textContent = input.type === 'password' ? '👁️' : '🙈';
+    });
+})();
+
 window.Telegram.WebApp.ready();
 window.Telegram.WebApp.expand();
 
