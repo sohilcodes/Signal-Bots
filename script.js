@@ -77,4 +77,3 @@ function showSignal() {
 
     document.getElementById('signal-card').style.display = 'block';
 }
-    
