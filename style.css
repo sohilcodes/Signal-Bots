@@ -1,10 +1,10 @@
 :root {
-    --bg: #0f0f13;
-    --card-bg: #1a1a22;
-    --text: #e0e0ff;
-    --accent: #0066ff;
-    --accent-dark: #0055cc;
-    --green: #00cc66;
+    --bg: #000000;
+    --card-bg: rgba(10, 20, 10, 0.75);
+    --text: #e0ffe0;
+    --accent: #00cc44;
+    --accent-dark: #009933;
+    --green: #00ff66;
     --red: #ff3366;
     --border-radius: 16px;
 }
@@ -16,15 +16,30 @@
 }
 
 body {
-    background: var(--bg);
+    background: #000;
     color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Courier New', Courier, monospace;
     min-height: 100vh;
     padding: env(safe-area-inset-top) 12px env(safe-area-inset-bottom) 12px;
     -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
 }
 
+/* Matrix canvas — fixed full-screen background */
+#matrix-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* All content sits above canvas */
 #app {
+    position: relative;
+    z-index: 10;
     max-width: 480px;
     margin: 0 auto;
     padding: 16px;
@@ -46,62 +61,85 @@ h1 {
     font-size: 28px;
     text-align: center;
     margin-bottom: 12px;
+    color: #00ff41;
+    text-shadow: 0 0 12px #00ff41, 0 0 24px #00aa33;
+    letter-spacing: 0.08em;
 }
 
 h2 {
     font-size: 24px;
     text-align: center;
     margin-bottom: 16px;
+    color: #00ff41;
+    text-shadow: 0 0 10px #00ff41;
+    letter-spacing: 0.06em;
 }
 
 .card {
     background: var(--card-bg);
     border-radius: var(--border-radius);
     padding: 20px 16px;
+    border: 1px solid rgba(0, 255, 65, 0.2);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
 }
 
 label {
     display: block;
     font-size: 16px;
     margin-bottom: 10px;
-    color: #aaaaff;
+    color: #00cc44;
+    letter-spacing: 0.05em;
 }
 
 select {
     width: 100%;
     padding: 16px;
     font-size: 18px;
-    background: #222233;
-    color: white;
-    border: none;
+    background: rgba(0, 20, 0, 0.85);
+    color: #00ff41;
+    border: 1px solid rgba(0, 255, 65, 0.3);
     border-radius: 12px;
     appearance: none;
+    font-family: 'Courier New', monospace;
+}
+
+select option {
+    background: #001a00;
+    color: #00ff41;
 }
 
 .big-btn {
-    background: var(--accent);
-    color: white;
+    background: rgba(0, 180, 50, 0.15);
+    color: #00ff41;
     font-size: 20px;
     font-weight: 600;
     padding: 18px;
-    border: none;
+    border: 1.5px solid #00cc44;
     border-radius: 14px;
     cursor: pointer;
     transition: all 0.15s;
     touch-action: manipulation;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.1em;
+    text-shadow: 0 0 8px #00ff41;
+    box-shadow: 0 0 12px rgba(0, 255, 65, 0.15), inset 0 0 12px rgba(0, 255, 65, 0.05);
     -webkit-tap-highlight-color: rgba(0,0,0,0.2);
 }
 
 .big-btn:active {
     transform: scale(0.97);
-    background: var(--accent-dark);
+    background: rgba(0, 200, 60, 0.3);
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.4);
 }
 
 .signal-btn {
     font-size: 22px;
     padding: 22px;
     margin: 40px 0 20px;
-    background: linear-gradient(135deg, #0066ff, #3399ff);
+    background: rgba(0, 200, 60, 0.2);
+    border-color: #00ff41;
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.25);
 }
 
 .expiry-grid {
@@ -112,21 +150,26 @@ select {
 
 .expiry-btn {
     background: var(--card-bg);
-    color: var(--text);
+    color: #00cc44;
     font-size: 18px;
     font-weight: 500;
     padding: 20px 12px;
-    border: none;
+    border: 1px solid rgba(0, 255, 65, 0.2);
     border-radius: 14px;
     transition: all 0.2s;
     touch-action: manipulation;
+    font-family: 'Courier New', monospace;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
 }
 
 .expiry-btn.active {
-    background: var(--accent);
-    color: white;
+    background: rgba(0, 200, 60, 0.25);
+    color: #00ff41;
+    border-color: #00ff41;
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 102, 255, 0.3);
+    box-shadow: 0 4px 16px rgba(0, 255, 65, 0.3), 0 0 8px rgba(0, 255, 65, 0.2);
+    text-shadow: 0 0 8px #00ff41;
 }
 
 .expiry-btn:active {
@@ -147,12 +190,22 @@ select {
     font-size: 17px;
     opacity: 0.5;
     transition: all 0.4s;
+    border: 1px solid rgba(0, 255, 65, 0.1);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.03em;
 }
 
 .step.done {
     opacity: 1;
-    background: rgba(0, 200, 100, 0.15);
-    border-left: 5px solid #00cc66;
+    background: rgba(0, 200, 60, 0.15);
+    border-left: 4px solid #00ff41;
+    border-color: rgba(0, 255, 65, 0.4);
+    border-left-color: #00ff41;
+    color: #00ff41;
+    text-shadow: 0 0 6px rgba(0, 255, 65, 0.4);
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.1);
 }
 
 .signal-card {
@@ -160,8 +213,11 @@ select {
     background: var(--card-bg);
     border-radius: var(--border-radius);
     padding: 24px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+    border: 1px solid rgba(0, 255, 65, 0.3);
+    box-shadow: 0 0 30px rgba(0, 255, 65, 0.15), 0 8px 30px rgba(0,0,0,0.6);
     animation: pop 0.4s ease-out;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 
 .signal-header {
@@ -169,7 +225,9 @@ select {
     font-weight: bold;
     text-align: center;
     margin-bottom: 20px;
-    color: #aaccff;
+    color: #00ff41;
+    text-shadow: 0 0 12px #00ff41;
+    letter-spacing: 0.1em;
 }
 
 .signal-row {
@@ -178,7 +236,8 @@ select {
     font-size: 18px;
     margin: 14px 0;
     padding-bottom: 10px;
-    border-bottom: 1px solid #333344;
+    border-bottom: 1px solid rgba(0, 255, 65, 0.15);
+    color: #aaffaa;
 }
 
 .signal-row:last-child {
@@ -189,17 +248,23 @@ select {
     font-size: 28px;
 }
 
-.green { color: var(--green); }
-.red   { color: var(--red); }
+.green {
+    color: var(--green);
+    text-shadow: 0 0 12px var(--green), 0 0 24px rgba(0, 255, 102, 0.5);
+}
+
+.red {
+    color: var(--red);
+    text-shadow: 0 0 12px var(--red), 0 0 24px rgba(255, 51, 102, 0.5);
+}
 
 @keyframes pop {
     0%   { transform: scale(0.85); opacity: 0; }
     100% { transform: scale(1);   opacity: 1; }
 }
 
-/* Extra spacing on very small screens */
 @media (max-width: 360px) {
     .big-btn { font-size: 18px; padding: 16px; }
     h1 { font-size: 24px; }
     .expiry-btn { font-size: 16px; padding: 16px 10px; }
-}
+    }
