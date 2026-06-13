@@ -363,6 +363,123 @@ select option { background: #020d02; color: #00ff41; }
     text-shadow: 0 0 16px var(--red), 0 0 30px rgba(255,51,85,0.4);
 }
 
+/* ── Category Tabs ── */
+.cat-tabs {
+    display: flex;
+    gap: 10px;
+}
+
+.cat-tab {
+    flex: 1;
+    padding: 12px 8px;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-radius: 12px;
+    border: 1.5px solid rgba(255,255,255,0.1);
+    background: rgba(10,20,10,0.6);
+    color: rgba(255,255,255,0.4);
+    cursor: pointer;
+    transition: all 0.2s;
+    backdrop-filter: blur(6px);
+}
+
+.cat-tab.active {
+    background: linear-gradient(135deg, rgba(245,200,66,0.2), rgba(180,140,20,0.1));
+    color: var(--gold);
+    border-color: rgba(245,200,66,0.55);
+    text-shadow: 0 0 8px rgba(245,200,66,0.4);
+    box-shadow: 0 0 14px rgba(245,200,66,0.15);
+}
+
+/* ── Pair List ── */
+.pair-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 280px;
+    overflow-y: auto;
+    padding-right: 2px;
+    scrollbar-width: none;
+}
+.pair-list::-webkit-scrollbar { display: none; }
+
+.pair-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: rgba(8,15,8,0.75);
+    border-radius: 14px;
+    border: 1px solid rgba(0,255,65,0.1);
+    cursor: pointer;
+    transition: all 0.2s;
+    backdrop-filter: blur(6px);
+}
+
+.pair-item:active { transform: scale(0.98); }
+
+.pair-item.selected {
+    border-color: rgba(245,200,66,0.6);
+    background: linear-gradient(135deg, rgba(245,200,66,0.12), rgba(0,0,0,0.5));
+    box-shadow: 0 0 16px rgba(245,200,66,0.15);
+}
+
+.pair-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.pair-emoji { font-size: 22px; line-height: 1; }
+
+.pair-info { display: flex; flex-direction: column; gap: 2px; }
+
+.pair-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #e8ffe8;
+    letter-spacing: 0.04em;
+    font-family: 'Courier New', monospace;
+}
+
+.pair-profit {
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 0.06em;
+    opacity: 0.8;
+}
+
+.pair-check {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: transparent;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.pair-item.selected .pair-check {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #000;
+    box-shadow: 0 0 10px rgba(245,200,66,0.4);
+}
+
+/* ── Disabled button ── */
+.big-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
 /* ── Winrate Circle ── */
 .winrate-wrapper {
     display: flex;
@@ -451,5 +568,4 @@ select option { background: #020d02; color: #00ff41; }
     .big-btn { font-size: 15px; padding: 15px; }
     .expiry-btn { font-size: 14px; padding: 15px 8px; }
     #join-btn { font-size: 11px; padding: 7px 11px; }
-    }
-    
+}
