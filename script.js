@@ -13,7 +13,8 @@
 
     function showApp() {
         loginScreen.style.display = 'none';
-        app.style.removeProperty('display');   // CSS le lega — flex via .screen.active
+        app.style.visibility = 'visible';
+        app.style.pointerEvents = 'auto';
         if (topbar) topbar.style.display = 'flex';
         initApp();   // pairs + winrate after login
     }
