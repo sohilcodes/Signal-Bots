@@ -263,8 +263,65 @@ select option {
     100% { transform: scale(1);   opacity: 1; }
 }
 
+/* ── Top Bar ── */
+#topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 14px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0, 255, 65, 0.2);
+}
+
+#logo {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: 2px solid rgba(0, 255, 65, 0.5);
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+    object-fit: cover;
+}
+
+#join-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0, 180, 50, 0.15);
+    color: #00ff41;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    padding: 8px 14px;
+    border: 1.5px solid rgba(0, 255, 65, 0.5);
+    border-radius: 20px;
+    text-shadow: 0 0 6px #00ff41;
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.15);
+    transition: all 0.2s;
+}
+
+#join-btn:active {
+    background: rgba(0, 220, 60, 0.3);
+    box-shadow: 0 0 18px rgba(0, 255, 65, 0.4);
+    transform: scale(0.97);
+}
+
+/* Push app content down so topbar doesn't overlap */
+#app {
+    padding-top: 70px;
+}
+
 @media (max-width: 360px) {
     .big-btn { font-size: 18px; padding: 16px; }
     h1 { font-size: 24px; }
     .expiry-btn { font-size: 16px; padding: 16px 10px; }
-    }
+    #join-btn { font-size: 12px; padding: 7px 11px; }
+}
